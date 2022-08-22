@@ -1,10 +1,10 @@
 import csv
 import pandas as pd
 
-qb = pd.DataFrame({'Rank':[],'Player':[], 'Team':[], 'ST DEV':[]})
-rb = pd.DataFrame({'Rank':[],'Player':[], 'Team':[], 'ST DEV':[]})
-wr = pd.DataFrame({'Rank':[],'Player':[], 'Team':[],'ST DEV':[]})
-te = pd.DataFrame({'Rank':[],'Player':[], 'Team':[], 'ST DEV':[]})
+qb = pd.DataFrame({'Player':[], 'Team':[], 'AVG':[], 'ST DEV':[]})
+rb = pd.DataFrame({'Player':[], 'Team':[], 'AVG':[], 'ST DEV':[]})
+wr = pd.DataFrame({'Player':[], 'Team':[], 'AVG':[], 'ST DEV':[]})
+te = pd.DataFrame({'Player':[], 'Team':[], 'AVG':[], 'ST DEV':[]})
            
 qb_rankings = pd.DataFrame({'Player':[]})
 rb_rankings = pd.DataFrame({'Player':[]})
@@ -266,20 +266,115 @@ for p in pos:
                 line = pd.DataFrame({'Player': hayd_ref[hayd[j]], 'Hayden':int(j+1)}, index=[index])
                 te_rankings = pd.concat([te_rankings,line])
                 
+#------------------------------------------------- Matt Harmon --------------------------------------------------------------#
+
+
+with open('FantasyPros-QB.csv', newline='') as csvfile:
+    reader = csv.DictReader(csvfile)
+    index = len(qb_rankings)
+    for row in reader:
+        match = False
+        if row['Matt Harmon'] != '':
+            for i in range(len(qb_rankings)):
+                if row['Player Name'] in qb_rankings['Player'][i+1] or qb_rankings['Player'][i+1] in row['Player Name']:
+                    qb_rankings.loc[(qb_rankings['Player'] == qb_rankings['Player'][i+1],'Matt')] = int(row['Matt Harmon'])
+                    match = True
+            if match == False:
+                index = index + 1
+                line = pd.DataFrame({'Player': row['Player Name'], 'Matt':int(row['Matt Harmon'])}, index=[index])
+                qb_rankings = pd.concat([qb_rankings,line])
+
+with open('FantasyPros-RB.csv', newline='') as csvfile:
+    reader = csv.DictReader(csvfile)
+    index = len(rb_rankings)
+    for row in reader:
+        match = False
+        if row['Matt Harmon'] != '':
+            for i in range(len(rb_rankings)):
+                if row['Player Name'] in rb_rankings['Player'][i+1] or rb_rankings['Player'][i+1] in row['Player Name']:
+                    rb_rankings.loc[(rb_rankings['Player'] == rb_rankings['Player'][i+1],'Matt')] = int(row['Matt Harmon'])
+                    match = True
+                elif row['Player Name'] == 'Ken Walker III':
+                   rb_rankings.loc[(rb_rankings['Player'] == 'Kenneth Walker III','Matt')] = int(row['Matt Harmon'])
+                   match = True
+            if match == False:
+                index = index + 1
+                line = pd.DataFrame({'Player': row['Player Name'], 'Matt':int(row['Matt Harmon'])}, index=[index])
+                rb_rankings = pd.concat([rb_rankings,line])
+
+with open('FantasyPros-WR.csv', newline='') as csvfile:
+    reader = csv.DictReader(csvfile)
+    index = len(wr_rankings)
+    for row in reader:
+        match = False
+        if row['Matt Harmon'] != '':
+            for i in range(len(wr_rankings)):
+                if row['Player Name'] in wr_rankings['Player'][i+1] or wr_rankings['Player'][i+1] in row['Player Name']:
+                    wr_rankings.loc[(wr_rankings['Player'] == wr_rankings['Player'][i+1],'Matt')] = int(row['Matt Harmon'])
+                    match = True
+                elif row['Player Name'] == 'Gabriel Davis':
+                    wr_rankings.loc[(wr_rankings['Player'] == 'Gabe Davis','Matt')] = int(row['Matt Harmon'])
+                    match = True
+            if match == False:
+                index = index + 1
+                line = pd.DataFrame({'Player': row['Player Name'], 'Matt':int(row['Matt Harmon'])}, index=[index])
+                wr_rankings = pd.concat([wr_rankings,line])
+
+with open('FantasyPros-TE.csv', newline='') as csvfile:
+    reader = csv.DictReader(csvfile)
+    index = len(te_rankings)
+    for row in reader:
+        match = False
+        if row['Matt Harmon'] != '':
+            for i in range(len(te_rankings)):
+                if row['Player Name'] in te_rankings['Player'][i+1] or te_rankings['Player'][i+1] in row['Player Name']:
+                    te_rankings.loc[(te_rankings['Player'] == te_rankings['Player'][i+1],'Matt')] = int(row['Matt Harmon'])
+                    match = True
+            if match == False:
+                index = index + 1
+                line = pd.DataFrame({'Player': row['Player Name'], 'Matt':int(row['Matt Harmon'])}, index=[index])
+                te_rankings = pd.concat([te_rankings,line])
+
+
+
 #------------------------------------------------- Export to CSV --------------------------------------------------------------#
 
 # Replacing NaN with Max Ranking of Each Ranker
-rankers = ['Andy', 'Mike', 'Jason', 'Boone', 'Josh', 'Hayden']
+rankers = ['Andy', 'Mike', 'Jason', 'Boone', 'Josh', 'Hayden', 'Matt']
 for ranker in rankers:
     qb_rankings[ranker] = qb_rankings[ranker].fillna(max(qb_rankings[ranker]+1))
     rb_rankings[ranker] = rb_rankings[ranker].fillna(max(rb_rankings[ranker]+1))
     wr_rankings[ranker] = wr_rankings[ranker].fillna(max(wr_rankings[ranker]+1))
     te_rankings[ranker] = te_rankings[ranker].fillna(max(te_rankings[ranker]+1))
+
+for i in range(len(qb_rankings)):
+    avg = ((qb_rankings.drop(columns=['Player'])).iloc[i]).mean()
+    std = ((qb_rankings.drop(columns=['Player'])).iloc[i]).std()  
+    line = pd.DataFrame({'Player':qb_rankings.iloc[i]['Player'],'AVG':avg,'ST DEV':std}, index=[0])
+    qb = pd.concat([qb,line])
+
+for i in range(len(rb_rankings)):
+    avg = ((rb_rankings.drop(columns=['Player'])).iloc[i]).mean()
+    std = ((rb_rankings.drop(columns=['Player'])).iloc[i]).std()  
+    line = pd.DataFrame({'Player':rb_rankings.iloc[i]['Player'],'AVG':avg,'ST DEV':std}, index=[0])
+    rb = pd.concat([rb,line])
+
+for i in range(len(wr_rankings)):
+    avg = ((wr_rankings.drop(columns=['Player'])).iloc[i]).mean()
+    std = ((wr_rankings.drop(columns=['Player'])).iloc[i]).std()  
+    line = pd.DataFrame({'Player':wr_rankings.iloc[i]['Player'],'AVG':avg,'ST DEV':std}, index=[0])
+    wr = pd.concat([wr,line])
+
+for i in range(len(te_rankings)):
+    avg = ((te_rankings.drop(columns=['Player'])).iloc[i]).mean()
+    std = ((te_rankings.drop(columns=['Player'])).iloc[i]).std()  
+    line = pd.DataFrame({'Player':te_rankings.iloc[i]['Player'],'AVG':avg,'ST DEV':std}, index=[0])
+    te = pd.concat([te,line])
     
-qb_rankings.to_csv('rankings_qb.csv',index=False)
-rb_rankings.to_csv('rankings_rb.csv',index=False)
-wr_rankings.to_csv('rankings_wr.csv',index=False)
-te_rankings.to_csv('rankings_te.csv',index=False)
+qb.to_csv('rankings_qb.csv',index=False)
+rb.to_csv('rankings_rb.csv',index=False)
+wr.to_csv('rankings_wr.csv',index=False)
+te.to_csv('rankings_te.csv',index=False)
 
 
 
